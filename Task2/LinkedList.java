@@ -1,87 +1,106 @@
-class Node {
-    int data;
-    Node next;
+class Node<T> {
+    T data;
+    Node<T> next;
 
-    public Node(int data) {
+    public Node(T data) {
         this.data = data;
         this.next = null;
     }
 }
 
-public class LinkedList {
-    private Node head;
-    public void tambahNode(int data) {
-        Node nodeBaru = new Node(data);
+public class LinkedList<T> {
+    private Node<T> head;
+    private int size = 0;
+
+    private void updatePosition(T data, int position) {
+        if (data instanceof Club) {
+            ((Club) data).setPositionClub(position);
+        } else if (data instanceof StarPlayer) {
+            ((StarPlayer) data).setRankPosition(position);
+        }
+    }
+
+    private void updateAllPositions() {
+        Node<T> current = head;
+        int pos = 1;
+        while (current != null) {
+            updatePosition(current.data, pos);
+            current = current.next;
+            pos++;
+        }
+    }
+
+    public void tambahNode(T data) {
+        Node<T> nodeBaru = new Node<>(data);
+        size++;
+
+        updatePosition(data, size);
 
         if (head == null) {
             head = nodeBaru;
-            System.out.println("Node " + data + " berhasil ditambahkan sebagai Head.");
+            System.out.println("Data berhasil ditambahkan sebagai Head.");
             return;
         }
 
-        Node penunjuk = head;
+        Node<T> penunjuk = head;
         while (penunjuk.next != null) {
             penunjuk = penunjuk.next;
         }
 
         penunjuk.next = nodeBaru;
-        System.out.println("Node " + data + " berhasil ditambahkan.");
+        System.out.println("Data berhasil ditambahkan pada urutan ke-" + size + ".");
     }
-    public void hapusNode(int data) {
+
+    public void hapusNode(T data) {
         if (head == null) {
-            System.out.println("LinkedList kosong, tidak ada data yang dihapus.");
+            System.out.println("List kosong, tidak ada data yang dihapus.");
             return;
         }
 
-        if (head.data == data) {
+        if (head.data.equals(data)) {
             head = head.next;
-            System.out.println("Node " + data + " berhasil dihapus.");
+            size--;
+            updateAllPositions();
+            System.out.println("Data berhasil dihapus.");
             return;
         }
 
-        Node penunjuk = head;
-        while (penunjuk.next != null && penunjuk.next.data != data) {
+        Node<T> penunjuk = head;
+        while (penunjuk.next != null && !penunjuk.next.data.equals(data)) {
             penunjuk = penunjuk.next;
         }
 
         if (penunjuk.next != null) {
             penunjuk.next = penunjuk.next.next;
-            System.out.println("Node " + data + " berhasil dihapus.");
+            size--;
+            updateAllPositions();
+            System.out.println("Data berhasil dihapus.");
         } else {
-            System.out.println("Node dengan nilai " + data + " tidak ditemukan.");
+            System.out.println("Data tidak ditemukan.");
         }
     }
-    public void cariNode(int data) {
-        if (head == null) {
-            System.out.println("LinkedList kosong.");
-            return;
-        }
 
-        Node penunjuk = head;
-        int posisi = 1;
-        boolean ditemukan = false;
+    public T get(int index) {
+        Node<T> penunjuk = head;
+        int posisi = 0;
 
         while (penunjuk != null) {
-            if (penunjuk.data == data) {
-                System.out.println("Data " + data + " ditemukan pada posisi/urutan ke-" + posisi + ".");
-                ditemukan = true;
-                break;
+            if (posisi == index) {
+                return penunjuk.data;
             }
             penunjuk = penunjuk.next;
             posisi++;
         }
-
-        if (!ditemukan) {
-            System.out.println("Data " + data + " tidak ditemukan dalam LinkedList.");
-        }
+        return null;
     }
+
     public void tampilkan() {
         if (head == null) {
             System.out.println("LinkedList kosong.");
             return;
         }
 
-        Node penunjuk = head;
+        Node<T> penunjuk = head;
         System.out.print("Isi LinkedList: ");
         while (penunjuk != null) {
             System.out.print(penunjuk.data + " -> ");
